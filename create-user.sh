@@ -13,7 +13,7 @@ openssl req -new -newkey rsa:4096 -nodes -keyout $USERNAME-k8s.key -out $USERNAM
 echo "upload CSR to Kubernetes"
 
 cat <<EOT | kubectl apply -f -
-apiVersion: certificates.k8s.io/v1beta1
+apiVersion: certificates.k8s.io/v1
 kind: CertificateSigningRequest
 metadata:
   name: $USERNAME-k8s-access
@@ -21,6 +21,7 @@ spec:
   groups:
   - system:authenticated
   request: $( cat $USERNAME-k8s.csr | base64 | tr -d '\n' )
+  signerName: kubernetes.io/kube-apiserver-client
   usages:
   - client auth
 EOT
